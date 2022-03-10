@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Card, CardContent, makeStyles, Typography } from "@material-ui/core";
+import Countup from "react-countup"
 
 HighlightCard.propTypes = {
     title: PropTypes.string,
@@ -35,7 +36,7 @@ function HighlightCard({title, count, type}) {
           {title}
         </Typography>
         <Typography variant="body2" component="span" className={classes.count}>
-          {count}
+          <Countup end={count} separator=" " duration={1}/>
         </Typography>
       </CardContent>
     </Card>
