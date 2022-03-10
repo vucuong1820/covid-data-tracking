@@ -1,28 +1,27 @@
-import React from "react";
+import { Grid } from "@material-ui/core";
 import PropTypes from "prop-types";
-import { Card, CardContent, Grid, Typography } from "@material-ui/core";
+import React from "react";
 import HighlightCard from "./HighlightCard";
 
 Highlight.propTypes = {
-  report: PropTypes.array,
+  report: PropTypes.object,
 };
 
-function Highlight({ report = [] }) {
-  const data = report[report.length - 1];
+function Highlight({ report = {} }) {
   const summary = [
     {
       title: "Số ca nhiễm",
-      count: data?.Confirmed,
+      count: report?.cases,
       type: "confirmed",
     },
     {
       title: "Số ca khỏi",
-      count: data?.Recovered,
+      count: report?.recovered,
       type: "recovered",
     },
     {
       title: "Số ca tử vong",
-      count: data?.Deaths,
+      count: report?.deaths,
       type: "death",
     },
   ];

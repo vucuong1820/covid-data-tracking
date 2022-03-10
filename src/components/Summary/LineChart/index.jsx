@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import HighchartsReact from "highcharts-react-official";
-import Highchart from "highcharts";
+import Highcharts from "highcharts";
+import dayjs from 'dayjs'
+import customParseFormat  from 'dayjs/plugin/advancedFormat'
+import { Button, ButtonGroup } from "@material-ui/core";
 
-LineChart.propTypes = {};
+dayjs.extend(customParseFormat)
 
-const generateOptions = (data) => {
-  const categories = [];
+LineChart.propTypes = {
+  data: PropTypes.array,
+};
+
+const generateOptions = (data = []) => {
+  const categories = data.map(item => dayjs(item.Date).format("DD/MM/YYYY"));
+  console.log()
   return {
     chart: {
       height: 500,
@@ -37,36 +45,56 @@ const generateOptions = (data) => {
       useHTML: true,
     },
 
-   
-
     plotOptions: {
       column: {
-          pointPadding: 0.2,
-          borderWidth: 0,
-      }
+        pointPadding: 0.2,
+        borderWidth: 0,
+      },
     },
 
     series: [
-     {
-         name: 'Tổng ca nhiễm',
-         data: data.map(item => item.Confirmed)
-     }
+      {
+        name: "Tổng ca nhiễm",
+        data: data?.map(item => item.Confirmed),
+      },
     ],
   };
 };
 
-function LineChart({data}) {
-    const [options, setOptions] = useState({})
-    useEffect(() => {
-        setOptions(generateOptions(data))
+function LineChart({ data = [] }) {
+  const [options, setOptions] = useState({});
+  const [reportTime, setReportTime] = useState('all')
+  useEffect(() => {
+    let customData = []
 
-    },[data])
-    
+    switch (reportTime) {
+      case 'all':
+        customData = data;
+        break;
+      case '30':
+        customData = data.slice(data.length -30)
+        break;
+      case '7':
+        customData = data.slice(data.length -7)
+        break;
+      default:
+        customData = data
+        break;
+    }
+    setOptions(generateOptions(customData));
+
+  }, [data, reportTime]);
+
   return (
     <div>
-      <HighchartsReact highcharts={Highchart} option={options} />
+      <ButtonGroup size="small" style={{ display: 'flex', justifyContent: 'flex-end'}}>
+        <Button color={reportTime === 'all' ? 'secondary' : ''} onClick={() => setReportTime('all')}>Tất cả</Button>
+        <Button color={reportTime === '30' ? 'secondary' : ''} onClick={() => setReportTime('30')}>30 ngày</Button>
+        <Button color={reportTime === '7' ? 'secondary' : ''} onClick={() => setReportTime('7')}>7 ngày</Button>
+      </ButtonGroup>
+      <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );
 }
 
-export default LineChart;
+export default React.memo(LineChart);
